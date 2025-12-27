@@ -1,4 +1,5 @@
 import { connectDatabase } from '@/Config/Database.Config';
+import sequelize from '@/Config/Database.Config';
 
 /**
  * Bootstrap function to initialize the application
@@ -11,6 +12,10 @@ export const bootstrap = async (): Promise<void> => {
     // Initialize database connection
     await connectDatabase();
     console.log('[INFO] Database connection established successfully');
+
+    // Sync database models (create tables if they don't exist)
+    await sequelize.sync({ alter: false });
+    console.log('[INFO] Database models synchronized successfully');
 
     // Add any additional initialization logic here
     // Examples:
