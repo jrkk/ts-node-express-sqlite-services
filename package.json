@@ -1,7 +1,7 @@
 {
-  "name": "express-ts-node-services",
+  "name": "express-ts-node-sqlite-services",
   "version": "1.0.0",
-  "description": "Boilerplate application with TypeScript and Express framework, fit for building RESTful APIs",
+  "description": "Boilerplate application with TypeScript and Express framework, fit for building RESTful APIs with SQLite",
   "main": "dist/Index.js",
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register src/Index.ts",
@@ -30,6 +30,8 @@
     "typescript",
     "nodejs",
     "sequelize",
+    "sqlite",
+    "sqlite3",
     "api",
     "rest"
   ],
