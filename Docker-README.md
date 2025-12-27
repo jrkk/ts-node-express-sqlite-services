@@ -10,15 +10,14 @@ This document provides instructions for running the Express TypeScript applicati
 ## Files Overview
 
 - `Dockerfile`: Defines how to build the application container
-- `docker-compose.yml`: Orchestrates the application and PostgreSQL database
+- `docker-compose.yml`: Orchestrates the application with SQLite database
 - `.dockerignore`: Specifies files to exclude from the Docker build context
-- `healthcheck.js`: Health check script for container monitoring
 
 ## Quick Start
 
 ### Option 1: Using Docker Compose (Recommended)
 
-1. **Build and run the application with database:**
+1. **Build and run the application:**
 
    ```bash
    docker-compose up --build
@@ -58,15 +57,11 @@ This document provides instructions for running the Express TypeScript applicati
 
 The application supports the following environment variables:
 
-| Variable      | Description       | Default       |
-| ------------- | ----------------- | ------------- |
-| `NODE_ENV`    | Environment mode  | `development` |
-| `PORT`        | Application port  | `3000`        |
-| `DB_HOST`     | Database host     | `localhost`   |
-| `DB_PORT`     | Database port     | `5432`        |
-| `DB_NAME`     | Database name     | `express_db`  |
-| `DB_USERNAME` | Database username | `postgres`    |
-| `DB_PASSWORD` | Database password | `password`    |
+| Variable     | Description      | Default              |
+| ------------ | ---------------- | -------------------- |
+| `NODE_ENV`   | Environment mode | `development`        |
+| `PORT`       | Application port | `3000`               |
+| `DB_STORAGE` | Database file    | `./database.sqlite`  |
 
 ## Development
 
@@ -97,7 +92,6 @@ For development with hot reload, you can override the Docker Compose configurati
 
 - Application: http://localhost:3000
 - Health Check: http://localhost:3000/api/health
-- Database: localhost:5432 (when using docker-compose)
 
 ## Useful Commands
 
@@ -124,10 +118,9 @@ For development with hot reload, you can override the Docker Compose configurati
    - Change the port mapping in docker-compose.yml
    - Or stop the conflicting service
 
-2. **Database connection issues:**
-   - Ensure PostgreSQL container is running
-   - Check environment variables
-   - Verify network connectivity
+2. **Database file access issues:**
+   - Ensure the database volume is properly mounted
+   - Check file permissions
 
 3. **Build failures:**
    - Clear Docker cache: `docker system prune`

@@ -1,4 +1,4 @@
-# Express TypeScript Node Postgres Services
+# Express TypeScript Node SQLite Services
 
 A production-ready boilerplate application built with Node.js, Express, and TypeScript. Perfect for building RESTful APIs with best practices and modern tooling.
 
@@ -8,7 +8,7 @@ A production-ready boilerplate application built with Node.js, Express, and Type
 - **Framework**: Express.js
 - **Language**: TypeScript
 - **ORM**: Sequelize
-- **Database**: PostgreSQL
+- **Database**: SQLite
 - **Testing**: Mocha & Chai
 - **Process Management**: PM2
 - **Linting**: ESLint
@@ -65,16 +65,12 @@ cp .env.example .env
 ```env
 NODE_ENV=development
 PORT=3000
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=express_db
-DB_USERNAME=postgres
-DB_PASSWORD=password
+DB_STORAGE=./database.sqlite
 ```
 
 ### 🐳 Docker Setup
 
-For a quick start with Docker (includes database):
+For a quick start with Docker:
 
 ```bash
 # Using Docker Compose (recommended)

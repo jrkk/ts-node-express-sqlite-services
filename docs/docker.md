@@ -23,17 +23,17 @@ The project includes several Docker-related files:
 | File                 | Purpose                                                  |
 | -------------------- | -------------------------------------------------------- |
 | `Dockerfile`         | Defines how to build the application container           |
-| `docker-compose.yml` | Orchestrates the application and PostgreSQL database     |
+| `docker-compose.yml` | Orchestrates the application with SQLite database        |
 | `.dockerignore`      | Specifies files to exclude from the Docker build context |
 
 ## 🚀 Quick Start
 
 ### Option 1: Using Docker Compose (Recommended)
 
-This is the easiest way to run the complete application stack with database:
+This is the easiest way to run the complete application:
 
 ```bash
-# Build and run the application with database
+# Build and run the application
 docker-compose up --build
 
 # Or run in detached mode (background)
@@ -50,7 +50,7 @@ If you prefer to use Docker without Docker Compose:
 # Build the image
 docker build -t express-ts-app .
 
-# Run the container (without database)
+# Run the container
 docker run -p 3000:3000 express-ts-app
 ```
 
@@ -87,8 +87,7 @@ docker-compose up -d
 Start specific services:
 
 ```bash
-docker-compose up postgres  # Only database
-docker-compose up app       # Only application (requires running database)
+docker-compose up app       # Application
 ```
 
 ### Stopping the Application
@@ -99,7 +98,7 @@ Stop running services:
 docker-compose down
 ```
 
-Stop and remove volumes (⚠️ This will delete database data):
+Stop and remove volumes (⚠️ This will delete database file):
 
 ```bash
 docker-compose down -v
@@ -129,7 +128,6 @@ View logs from specific service:
 
 ```bash
 docker-compose logs app      # Application logs
-docker-compose logs postgres # Database logs
 ```
 
 ### Managing Containers
@@ -145,7 +143,6 @@ Execute commands in running container:
 ```bash
 docker-compose exec app sh                    # Open shell in app container
 docker-compose exec app npm test             # Run tests in container
-docker-compose exec postgres psql -U postgres # Connect to database
 ```
 
 ## 🌍 Environment Configuration
@@ -154,23 +151,11 @@ The Docker setup uses environment variables defined in `docker-compose.yml`:
 
 ### Application Environment Variables
 
-| Variable      | Default Value | Description         |
-| ------------- | ------------- | ------------------- |
-| `NODE_ENV`    | `production`  | Node.js environment |
-| `PORT`        | `3000`        | Application port    |
-| `DB_HOST`     | `postgres`    | Database host       |
-| `DB_PORT`     | `5432`        | Database port       |
-| `DB_NAME`     | `express_db`  | Database name       |
-| `DB_USERNAME` | `postgres`    | Database username   |
-| `DB_PASSWORD` | `password`    | Database password   |
-
-### Database Environment Variables
-
-| Variable            | Default Value | Description       |
-| ------------------- | ------------- | ----------------- |
-| `POSTGRES_DB`       | `express_db`  | Database name     |
-| `POSTGRES_USER`     | `postgres`    | Database user     |
-| `POSTGRES_PASSWORD` | `password`    | Database password |
+| Variable     | Default Value        | Description         |
+| ------------ | -------------------- | ------------------- |
+| `NODE_ENV`   | `production`         | Node.js environment |
+| `PORT`       | `3000`               | Application port    |
+| `DB_STORAGE` | `/app/data/database.sqlite` | SQLite database file path |
 
 ### Custom Environment Variables
 
@@ -180,11 +165,11 @@ To override default values, you can:
 2. **Use environment variables file**:
    ```bash
    # Create .env file in project root
-   echo "DB_PASSWORD=mysecretpassword" > .env
+   echo "DB_STORAGE=/app/data/mydb.sqlite" > .env
    ```
 3. **Set environment variables before running**:
    ```bash
-   DB_PASSWORD=mysecretpassword docker-compose up
+   DB_STORAGE=/app/data/mydb.sqlite docker-compose up
    ```
 
 ## 🔍 Health Monitoring
@@ -233,10 +218,14 @@ curl http://localhost:3000/health
 
 ### Accessing the Database
 
-Connect to PostgreSQL database:
+The SQLite database file is stored in a Docker volume and can be accessed using SQLite tools:
 
 ```bash
-docker-compose exec postgres psql -U postgres -d express_db
+# Copy the database file from the container
+docker-compose cp app:/app/data/database.sqlite ./database.sqlite
+
+# Or access it directly in the container
+docker-compose exec app sqlite3 /app/data/database.sqlite
 ```
 
 ### Database Persistence
@@ -247,8 +236,8 @@ Database data is persisted using Docker volumes:
 # View volumes
 docker volume ls
 
-# Inspect the postgres volume
-docker volume inspect express-ts-node-services_postgres_data
+# Inspect the sqlite volume
+docker volume inspect ts-node-express-sqlite-services_sqlite_data
 ```
 
 ### Database Backup and Restore
@@ -256,13 +245,14 @@ docker volume inspect express-ts-node-services_postgres_data
 Create a backup:
 
 ```bash
-docker-compose exec postgres pg_dump -U postgres express_db > backup.sql
+docker-compose cp app:/app/data/database.sqlite ./backup.sqlite
 ```
 
 Restore from backup:
 
 ```bash
-docker-compose exec -T postgres psql -U postgres express_db < backup.sql
+docker-compose cp ./backup.sqlite app:/app/data/database.sqlite
+docker-compose restart app
 ```
 
 ## 🐛 Troubleshooting
@@ -280,11 +270,14 @@ docker-compose exec -T postgres psql -U postgres express_db < backup.sql
 2. **Database connection issues**:
 
    ```bash
-   # Check if postgres container is running
+   # Check if app container is running
    docker-compose ps
 
-   # Check postgres logs
-   docker-compose logs postgres
+   # Check app logs
+   docker-compose logs app
+
+   # Verify database file exists
+   docker-compose exec app ls -la /app/data/
    ```
 
 3. **Build failures**:
@@ -417,7 +410,7 @@ networks:
 - [Docker Documentation](https://docs.docker.com/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Node.js Docker Best Practices](https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md)
-- [PostgreSQL Docker Hub](https://hub.docker.com/_/postgres)
+- [SQLite Documentation](https://www.sqlite.org/docs.html)
 
 ## 🆘 Getting Help
 

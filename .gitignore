@@ -18,6 +18,11 @@ coverage/
 .env.local
 .env.*.local
 
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
 # IDE
 .vscode/*
 !.vscode/settings.json
