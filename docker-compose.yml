@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_STORAGE=/app/data/database.sqlite
+    volumes:
+      - sqlite_data:/app/data
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  sqlite_data:
+
+networks:
+  app-network:
+    driver: bridge
